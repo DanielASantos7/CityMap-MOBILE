@@ -3,12 +3,25 @@
     x:Class="Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:Mobile"
-    Title="Mobile">
+    xmlns:views="clr-namespace:Mobile.Views"
+    Title="Mobile"
+    Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar CurrentItem="{x:Reference tabServicos}">
+
+        <Tab Title="Navegação no Mapa">
+            <ShellContent ContentTemplate="{DataTemplate views:ListRestaurantsView}" />
+        </Tab>
+
+        <!--  O x:Name permite que a TabBar inicie diretamente nesta aba  -->
+        <Tab x:Name="tabServicos" Title="Serviços Próximos">
+            <ShellContent ContentTemplate="{DataTemplate views:ListRestaurantsView}" />
+        </Tab>
+
+        <Tab Title="Perfil">
+            <ShellContent ContentTemplate="{DataTemplate views:ListRestaurantsView}" />
+        </Tab>
+
+    </TabBar>
 
 </Shell>

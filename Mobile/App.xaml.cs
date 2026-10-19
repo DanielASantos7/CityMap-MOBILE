@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace Mobile
+﻿namespace Mobile
 {
     public partial class App : Application
     {

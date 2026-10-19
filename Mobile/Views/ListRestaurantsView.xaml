@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mobile.Views.ListRestaurantsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="ListRestaurantsView"
+    BackgroundColor="WhiteSmoke"
+    Shell.NavBarIsVisible="False">
+    <Grid Padding="10" RowDefinitions="Auto, *, Auto">
+
+        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10">
+
+            <Label
+                Grid.Column="0"
+                FontSize="16"
+                Text="Filtro:"
+                TextColor="Black" />
+
+            <Picker
+                Title="Selecione um filtro"
+                Grid.Column="1"
+                FontSize="16"
+                HorizontalOptions="Fill"
+                ItemDisplayBinding="{Binding Nome}"
+                ItemsSource="{Binding Filtro}"
+                TextColor="Black" />
+        </Grid>
+
+
+        <CollectionView
+            x:Name="cvLista"
+            Grid.Row="1"
+            Margin="5">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border
+                        Margin="5,5,5,10"
+                        BackgroundColor="White"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="0">
+                        <Grid
+                            Padding="10"
+                            ColumnDefinitions="Auto, *"
+                            ColumnSpacing="10">
+
+                            <!--  IMAGEM  -->
+                            <Image
+                                Grid.Column="0"
+                                Aspect="AspectFill"
+                                HeightRequest="80"
+                                Source="{Binding Imagem}"
+                                WidthRequest="80" />
+
+                            <!--  DADOS À DIREITA  -->
+                            <Grid
+                                Grid.Column="1"
+                                RowDefinitions="Auto, *"
+                                RowSpacing="5"
+                                VerticalOptions="Center">
+
+                                <!--  LINHA 1: TIPO + NOME  -->
+                                <Grid
+                                    Grid.Row="0"
+                                    ColumnDefinitions="Auto, *"
+                                    ColumnSpacing="5">
+                                    <Border
+                                        Grid.Column="0"
+                                        BackgroundColor="#1E88E5"
+                                        StrokeShape="RoundRectangle 4"
+                                        StrokeThickness="0">
+                                        <Label
+                                            Padding="6,2"
+                                            FontAttributes="Bold"
+                                            FontSize="12"
+                                            Text="{Binding TipoEstabelecimento}"
+                                            TextColor="White" />
+                                    </Border>
+                                    <Label
+                                        Grid.Column="1"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        LineBreakMode="TailTruncation"
+                                        Text="{Binding NomeEstabelecimento}"
+                                        TextColor="Black" />
+                                </Grid>
+
+                                <!--  LINHA 2: DISTÂNCIA + ESTRELA  -->
+                                <Grid Grid.Row="1" ColumnDefinitions="*, Auto">
+                                    <Label
+                                        Grid.Column="0"
+                                        FontSize="14"
+                                        Text="{Binding DistanciaFormatada}"
+                                        TextColor="Gray"
+                                        VerticalOptions="Center" />
+
+                                    <HorizontalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="3"
+                                        VerticalOptions="Center">
+                                        <Image HeightRequest="14" Source="estrela.png" />
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="14"
+                                            Text="{Binding Rating}"
+                                            TextColor="Gray" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
