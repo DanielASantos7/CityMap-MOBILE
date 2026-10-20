@@ -3,34 +3,49 @@
     x:Class="Mobile.Views.ListRestaurantsView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="ListRestaurantsView"
     BackgroundColor="WhiteSmoke"
     Shell.NavBarIsVisible="False">
-    <Grid Padding="10" RowDefinitions="Auto, *, Auto">
 
-        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10">
+    <Grid Padding="10" RowDefinitions="Auto, *">
 
+        <!--  FILTRO SUPERIOR  -->
+        <Grid
+            Grid.Row="0"
+            Margin="0,0,0,10"
+            ColumnDefinitions="Auto, *"
+            ColumnSpacing="10">
             <Label
                 Grid.Column="0"
                 FontSize="16"
                 Text="Filtro:"
-                TextColor="Black" />
+                TextColor="Black"
+                VerticalOptions="Center" />
 
             <Picker
+                x:Name="pkFiltro"
                 Title="Selecione um filtro"
                 Grid.Column="1"
                 FontSize="16"
                 HorizontalOptions="Fill"
-                ItemDisplayBinding="{Binding Nome}"
-                ItemsSource="{Binding Filtro}"
-                TextColor="Black" />
+                SelectedIndexChanged="OnFiltroChanged"
+                TextColor="Black">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Todos</x:String>
+                        <x:String>Restaurante</x:String>
+                        <x:String>Atração</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
         </Grid>
 
-
+        <!--  LISTA DE ESTABELECIMENTOS  -->
         <CollectionView
             x:Name="cvLista"
             Grid.Row="1"
-            Margin="5">
+            Margin="0,5"
+            SelectionChanged="OnItemSelecionado"
+            SelectionMode="Single">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -44,7 +59,7 @@
                             ColumnDefinitions="Auto, *"
                             ColumnSpacing="10">
 
-                            <!--  IMAGEM  -->
+                            <!--  IMAGEM DE CAPA  -->
                             <Image
                                 Grid.Column="0"
                                 Aspect="AspectFill"
@@ -52,44 +67,44 @@
                                 Source="{Binding Imagem}"
                                 WidthRequest="80" />
 
-                            <!--  DADOS À DIREITA  -->
+                            <!--  INFORMAÇÕES À DIREITA  -->
                             <Grid
                                 Grid.Column="1"
                                 RowDefinitions="Auto, *"
                                 RowSpacing="5"
                                 VerticalOptions="Center">
 
-                                <!--  LINHA 1: TIPO + NOME  -->
+                                <!--  LINHA 1: TAG TIPO + NOME  -->
                                 <Grid
                                     Grid.Row="0"
                                     ColumnDefinitions="Auto, *"
-                                    ColumnSpacing="5">
+                                    ColumnSpacing="6">
                                     <Border
                                         Grid.Column="0"
-                                        BackgroundColor="#1E88E5"
+                                        BackgroundColor="{Binding CorTag}"
                                         StrokeShape="RoundRectangle 4"
                                         StrokeThickness="0">
                                         <Label
                                             Padding="6,2"
                                             FontAttributes="Bold"
                                             FontSize="12"
-                                            Text="{Binding TipoEstabelecimento}"
+                                            Text="{Binding TipoTag}"
                                             TextColor="White" />
                                     </Border>
                                     <Label
                                         Grid.Column="1"
                                         FontAttributes="Bold"
-                                        FontSize="16"
+                                        FontSize="15"
                                         LineBreakMode="TailTruncation"
-                                        Text="{Binding NomeEstabelecimento}"
+                                        Text="{Binding Nome}"
                                         TextColor="Black" />
                                 </Grid>
 
-                                <!--  LINHA 2: DISTÂNCIA + ESTRELA  -->
+                                <!--  LINHA 2: DISTÂNCIA + RATING  -->
                                 <Grid Grid.Row="1" ColumnDefinitions="*, Auto">
                                     <Label
                                         Grid.Column="0"
-                                        FontSize="14"
+                                        FontSize="13"
                                         Text="{Binding DistanciaFormatada}"
                                         TextColor="Gray"
                                         VerticalOptions="Center" />
@@ -98,7 +113,7 @@
                                         Grid.Column="1"
                                         Spacing="3"
                                         VerticalOptions="Center">
-                                        <Image HeightRequest="14" Source="estrela.png" />
+                                        <Label Text="⭐" />
                                         <Label
                                             FontAttributes="Bold"
                                             FontSize="14"
