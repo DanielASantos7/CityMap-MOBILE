@@ -1,5 +1,7 @@
 using Mobile.DTOs;
 using Mobile.Service;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace Mobile.Views;
 
@@ -41,8 +43,10 @@ public partial class ReviewView : ContentPage
 
                 foreach (var item in _todasAvaliacoes)
                 {
-                    if (string.IsNullOrWhiteSpace(item.AvatarUrl))
-                        item.AvatarUrl = "dotnet_bot.png";
+                    if (item.ImageUrls != null)
+                    {
+                        item.ImageUrls = item.ImageUrls.Select(FormatarUrl).ToList();
+                    }
                 }
 
                 AplicarFiltroEOrdenacao();
@@ -126,10 +130,9 @@ public partial class ReviewView : ContentPage
                 AtualizarPreviewFotos();
             }
         }
-        catch
+        catch (Exception ex)
         {
-            _fotosAnexadas.Add("/upload/20260602/639160112022167429.png");
-            AtualizarPreviewFotos();
+            await DisplayAlert("Aviso", $"Falha ao selecionar foto: {ex.Message}", "OK");
         }
     }
 
@@ -149,31 +152,97 @@ public partial class ReviewView : ContentPage
     {
         btnEnviar.IsEnabled = false;
 
-        var dto = new AddReviewDto
+        try
         {
-            BusinessType = _businessType,
-            BusinessId = _businessId,
-            Rating = _notaSelecionada.ToString(),
-            ReviewContent = txtComentario.Text?.Trim() ?? "",
-            ImageUrls = _fotosAnexadas
-        };
+            List<string> urlsServidor = await FazerUploadImagensAsync(_fotosAnexadas);
 
-        var res = await ApiService.PostAsync<ResponseApi<object>>("system/api/Review/add", dto);
+            var dto = new AddReviewDto
+            {
+                BusinessType = _businessType,
+                BusinessId = _businessId,
+                Rating = _notaSelecionada.ToString(),
+                ReviewContent = txtComentario.Text?.Trim() ?? "",
+                ImageUrls = urlsServidor
+            };
 
-        if (res != null && res.Code == 200)
-        {
-            await DisplayAlert("Sucesso", "Avaliação enviada com sucesso!", "OK");
+            var res = await ApiService.PostAsync<ResponseApi<object>>("system/api/Review/add", dto);
 
-            txtComentario.Text = string.Empty;
-            _fotosAnexadas.Clear();
-            AtualizarPreviewFotos();
+            if (res != null && res.Code == 200)
+            {
+                await DisplayAlert("Sucesso", "Avaliação enviada com sucesso!", "OK");
 
-            await CarregarAvaliacoesAsync();
+                txtComentario.Text = string.Empty;
+                _fotosAnexadas.Clear();
+                AtualizarPreviewFotos();
+
+                await CarregarAvaliacoesAsync();
+            }
+            else
+            {
+                await DisplayAlert("Erro", $"Falha ao enviar comentário: {ApiService.Erro}", "OK");
+                btnEnviar.IsEnabled = true;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao enviar comentário: {ApiService.Erro}", "OK");
+            await DisplayAlert("Erro Crítico", $"Falha no processo: {ex.Message}", "OK");
             btnEnviar.IsEnabled = true;
         }
+    }
+
+    private async Task<List<string>> FazerUploadImagensAsync(List<string> arquivosLocais)
+    {
+        var resultado = new List<string>();
+        if (arquivosLocais == null || arquivosLocais.Count == 0) return resultado;
+
+        try
+        {
+            using var client = new HttpClient { BaseAddress = new Uri("http://10.106.130.106:5080/") };
+            if (!string.IsNullOrEmpty(ApiService.Token))
+            {
+                client.DefaultRequestHeaders.Add("tokenHeader", ApiService.Token);
+            }
+
+            using var content = new MultipartFormDataContent();
+
+            foreach (var caminho in arquivosLocais)
+            {
+                if (File.Exists(caminho))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(caminho);
+                    var byteContent = new ByteArrayContent(fileBytes);
+                    byteContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+                    content.Add(byteContent, "files", Path.GetFileName(caminho));
+                }
+            }
+
+            var response = await client.PostAsync("api/upload/imagens", content);
+            if (response.IsSuccessStatusCode)
+            {
+                string json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("data", out var dataElement) && dataElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var el in dataElement.EnumerateArray())
+                    {
+                        if (el.ValueKind == JsonValueKind.String)
+                            resultado.Add(el.GetString()!);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UPLOAD ERROR] {ex.Message}");
+        }
+
+        return resultado;
+    }
+
+    private string FormatarUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return string.Empty;
+        if (url.StartsWith("http://") || url.StartsWith("https://") || url.StartsWith("/data/") || url.StartsWith("file://")) return url;
+        return $"http://10.106.130.106:5080/{url.TrimStart('/')}";
     }
 }
