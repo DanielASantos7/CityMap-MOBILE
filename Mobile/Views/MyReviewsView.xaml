@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mobile.Views.MyReviewsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:dtos="clr-namespace:Mobile.DTOs"
+    Title="My review"
+    BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!--  Picker de Ordenação  -->
+        <Border
+            Grid.Row="0"
+            Margin="0,0,0,8"
+            Padding="12,8"
+            BackgroundColor="White"
+            Stroke="#E0E0E0">
+            <Picker
+                x:Name="pckOrdenacao"
+                Title="Ordenação"
+                FontSize="13"
+                SelectedIndexChanged="OnOrdenacaoChanged"
+                TextColor="#0066CC">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Time (newest first)</x:String>
+                        <x:String>Time (oldest first)</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+        </Border>
+
+        <!--  Layout Sem Avaliações (CORRIGIDO: adicionado x:Name="layoutVazio")  -->
+        <VerticalStackLayout
+            x:Name="layoutVazio"
+            Grid.Row="1"
+            HorizontalOptions="Center"
+            IsVisible="False"
+            Spacing="10"
+            VerticalOptions="Center">
+            <Label
+                FontSize="40"
+                HorizontalOptions="Center"
+                Text="💬" />
+            <Label
+                FontSize="14"
+                HorizontalOptions="Center"
+                Text="Você ainda não possui avaliações."
+                TextColor="#777777" />
+        </VerticalStackLayout>
+
+        <!--  CollectionView Principal  -->
+        <CollectionView
+            x:Name="cvMinhasAvaliacoes"
+            Grid.Row="1"
+            Margin="12,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dtos:ReviewDto">
+                    <Border
+                        Margin="0,0,0,10"
+                        Padding="14"
+                        BackgroundColor="White"
+                        Stroke="#E0E0E0"
+                        StrokeShape="RoundRectangle 10">
+                        <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
+
+                            <!--  Header: Data e Botão Deletar  -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                <Label
+                                    FontSize="12"
+                                    Text="{Binding ReviewTime}"
+                                    TextColor="#888888"
+                                    VerticalOptions="Center" />
+
+                                <Button
+                                    Grid.Column="1"
+                                    Padding="4"
+                                    BackgroundColor="Transparent"
+                                    Clicked="OnExcluirClicked"
+                                    CommandParameter="{Binding ReviewId}"
+                                    FontSize="16"
+                                    Text="🗑️"
+                                    TextColor="#CC0000" />
+                            </Grid>
+
+                            <!--  Conteúdo da Avaliação  -->
+                            <Label
+                                Grid.Row="1"
+                                FontSize="14"
+                                LineBreakMode="WordWrap"
+                                Text="{Binding ReviewContent}"
+                                TextColor="#222222" />
+
+                            <!--  Galeria Horizontal de Imagens  -->
+                            <CollectionView
+                                Grid.Row="2"
+                                HeightRequest="60"
+                                ItemsSource="{Binding ImageUrls}">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout ItemSpacing="6" Orientation="Horizontal" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border
+                                            HeightRequest="60"
+                                            Stroke="#DDD"
+                                            StrokeShape="RoundRectangle 6"
+                                            WidthRequest="60">
+                                            <Image Aspect="AspectFill" Source="{Binding .}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>
