@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mobile.Views.ReviewView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:dtos="clr-namespace:Mobile.DTOs"
+    Title="Todos os comentários"
+    BackgroundColor="#F8F9FA">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!--  1. BARRA DE FILTROS E ORDENAÇÃO  -->
+        <Border
+            Grid.Row="0"
+            Margin="0,0,0,4"
+            Padding="12,8"
+            BackgroundColor="White"
+            Stroke="#E0E0E0">
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                <Picker
+                    x:Name="pckFiltroEstrelas"
+                    Title="AVALIAÇÕES"
+                    FontSize="13"
+                    SelectedIndexChanged="OnFiltroChanged"
+                    TextColor="#0066CC">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Todas as Estrelas</x:String>
+                            <x:String>5 Estrelas</x:String>
+                            <x:String>4 Estrelas</x:String>
+                            <x:String>3 Estrelas</x:String>
+                            <x:String>2 Estrelas</x:String>
+                            <x:String>1 Estrela</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <Picker
+                    x:Name="pckOrdenacao"
+                    Title="MAIS RECENTES"
+                    Grid.Column="1"
+                    FontSize="13"
+                    SelectedIndexChanged="OnFiltroChanged"
+                    TextColor="#0066CC">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Mais Recentes (Decrescente)</x:String>
+                            <x:String>Mais Antigos (Crescente)</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Grid>
+        </Border>
+
+        <!--  2. LISTA DE COMENTÁRIOS  -->
+        <CollectionView
+            x:Name="cvListaComentarios"
+            Grid.Row="1"
+            Margin="12,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dtos:ReviewDto">
+                    <Border
+                        Margin="0,0,0,10"
+                        Padding="12"
+                        BackgroundColor="White"
+                        Stroke="#E0E0E0"
+                        StrokeShape="RoundRectangle 10">
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="8">
+
+                            <!--  Header do Autor  -->
+                            <Grid
+                                Grid.Row="0"
+                                ColumnDefinitions="40, *, Auto"
+                                ColumnSpacing="10"
+                                VerticalOptions="Center">
+                                <Border
+                                    Grid.Column="0"
+                                    HeightRequest="40"
+                                    Stroke="Transparent"
+                                    StrokeShape="RoundRectangle 20"
+                                    WidthRequest="40">
+                                    <Image Aspect="AspectFill" Source="{Binding AvatarUrl}" />
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        Text="{Binding UserName}"
+                                        TextColor="#222" />
+                                    <Label
+                                        FontSize="11"
+                                        Text="{Binding ReviewTime}"
+                                        TextColor="#888" />
+                                </VerticalStackLayout>
+
+                                <HorizontalStackLayout Grid.Column="2" Spacing="2">
+                                    <Label
+                                        FontSize="12"
+                                        Text="★"
+                                        TextColor="#FF8800"
+                                        VerticalOptions="Center" />
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="12"
+                                        Text="{Binding Rating}"
+                                        TextColor="#FF8800"
+                                        VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Grid>
+
+                            <!--  Texto da Avaliação  -->
+                            <Label
+                                Grid.Row="1"
+                                FontSize="13"
+                                LineBreakMode="WordWrap"
+                                Text="{Binding ReviewContent}"
+                                TextColor="#444" />
+
+                            <!--  Galeria Horizontal  -->
+                            <CollectionView
+                                Grid.Row="2"
+                                HeightRequest="60"
+                                IsVisible="{Binding ImageUrls.Count}"
+                                ItemsSource="{Binding ImageUrls}">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout ItemSpacing="6" Orientation="Horizontal" />
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Border
+                                            HeightRequest="60"
+                                            Stroke="#DDD"
+                                            StrokeShape="RoundRectangle 6"
+                                            WidthRequest="60">
+                                            <Image Aspect="AspectFill" Source="{Binding .}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                            <!--  Curtidas  -->
+                            <HorizontalStackLayout Grid.Row="3" Spacing="4">
+                                <Label
+                                    FontSize="11"
+                                    Text="👍"
+                                    VerticalOptions="Center" />
+                                <Label
+                                    FontSize="11"
+                                    Text="{Binding LikeCount}"
+                                    TextColor="#777"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!--  3. PAINEL DE NOVO COMENTÁRIO (RODAPÉ)  -->
+        <Border
+            Grid.Row="2"
+            Margin="0"
+            Padding="14"
+            BackgroundColor="White"
+            Stroke="#E0E0E0">
+            <VerticalStackLayout Spacing="8">
+
+                <!--  Seleção de Estrelas  -->
+                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        Text="Avaliação:"
+                        TextColor="#333"
+                        VerticalOptions="Center" />
+                    <HorizontalStackLayout x:Name="layoutEstrelas" Spacing="4">
+                        <Label
+                            FontSize="22"
+                            Text="★"
+                            TextColor="#FF8800">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="1" Tapped="OnStarTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label
+                            FontSize="22"
+                            Text="★"
+                            TextColor="#FF8800">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="2" Tapped="OnStarTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label
+                            FontSize="22"
+                            Text="★"
+                            TextColor="#FF8800">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="3" Tapped="OnStarTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label
+                            FontSize="22"
+                            Text="★"
+                            TextColor="#FF8800">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="4" Tapped="OnStarTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label
+                            FontSize="22"
+                            Text="★"
+                            TextColor="#FF8800">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer CommandParameter="5" Tapped="OnStarTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+                </HorizontalStackLayout>
+
+                <!--  Input com Contador  -->
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                    <Editor
+                        x:Name="txtComentario"
+                        FontSize="12"
+                        HeightRequest="60"
+                        MaxLength="15"
+                        Placeholder="Digite o conteúdo da avaliação (de 5 a 15 caracteres)"
+                        TextChanged="TxtComentario_TextChanged" />
+
+                    <Button
+                        x:Name="btnAnexarFoto"
+                        Grid.Column="1"
+                        BackgroundColor="#F0F0F0"
+                        Clicked="OnAnexarFotoClicked"
+                        FontSize="18"
+                        HeightRequest="60"
+                        Text="📷"
+                        TextColor="#333"
+                        WidthRequest="50" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <Label
+                        x:Name="lblContador"
+                        FontSize="11"
+                        Text="0/15 caracteres (mínimo 5)"
+                        TextColor="#AA0000"
+                        VerticalOptions="Center" />
+
+                    <Button
+                        x:Name="btnEnviar"
+                        Grid.Column="1"
+                        BackgroundColor="#0066CC"
+                        Clicked="OnEnviarClicked"
+                        FontAttributes="Bold"
+                        HeightRequest="38"
+                        IsEnabled="False"
+                        Text="ENVIAR"
+                        TextColor="White" />
+                </Grid>
+
+                <!--  Preview de Fotos Anexadas  -->
+                <HorizontalStackLayout
+                    x:Name="layoutPreviewFotos"
+                    Margin="0,4,0,0"
+                    IsVisible="False"
+                    Spacing="8" />
+
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
+</ContentPage>
