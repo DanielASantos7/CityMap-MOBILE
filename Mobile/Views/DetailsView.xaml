@@ -3,205 +3,396 @@
     x:Class="Mobile.Views.DetailsView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Detalhes"
-    BackgroundColor="White">
+    xmlns:views="clr-namespace:Mobile.Views"
+    Title="Detalhes do Local"
+    BackgroundColor="#F8F9FA">
 
-    <ScrollView Padding="15">
-        <VerticalStackLayout Spacing="15">
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
 
-            <!--  IMAGEM PRINCIPAL  -->
-            <Image
-                x:Name="imgCapa"
-                Aspect="AspectFill"
-                HeightRequest="200"
-                HorizontalOptions="Fill" />
+            <!--  1. IMAGEM DE CAPA COM BORDAS ARREDONDADAS  -->
+            <Border
+                HeightRequest="220"
+                HorizontalOptions="Fill"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 12">
+                <Image
+                    x:Name="imgCapa"
+                    Aspect="AspectFill"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
+            </Border>
 
-            <!--  TITULO, TAG E RATING  -->
-            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="8">
+            <!--  2. HEADER: TÍTULO, TAG E RATING  -->
+            <Grid
+                ColumnDefinitions="*, Auto, Auto"
+                ColumnSpacing="8"
+                VerticalOptions="Center">
                 <Label
                     x:Name="lblNome"
                     Grid.Column="0"
                     FontAttributes="Bold"
-                    FontSize="20"
-                    TextColor="Black" />
+                    FontSize="22"
+                    LineBreakMode="TailTruncation"
+                    TextColor="#1A1A1A"
+                    VerticalOptions="Center" />
 
                 <Border
                     x:Name="brdTipo"
                     Grid.Column="1"
-                    BackgroundColor="#1E88E5"
-                    StrokeShape="RoundRectangle 4"
+                    Padding="8,4"
+                    BackgroundColor="#0066CC"
+                    StrokeShape="RoundRectangle 6"
                     StrokeThickness="0"
                     VerticalOptions="Center">
                     <Label
                         x:Name="lblTipo"
-                        Padding="6,2"
                         FontAttributes="Bold"
-                        FontSize="12"
+                        FontSize="11"
                         TextColor="White" />
                 </Border>
 
-                <HorizontalStackLayout
+                <Border
                     Grid.Column="2"
-                    Spacing="2"
+                    Padding="8,4"
+                    BackgroundColor="#FFF8E7"
+                    Stroke="#FFC107"
+                    StrokeShape="RoundRectangle 6"
                     VerticalOptions="Center">
-                    <Image HeightRequest="16" Source="estrela.png" />
-                    <Label
-                        x:Name="lblRating"
-                        FontAttributes="Bold"
-                        FontSize="14"
-                        TextColor="Gray" />
-                </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                        <Label
+                            FontSize="13"
+                            Text="★"
+                            TextColor="#FF8800"
+                            VerticalOptions="Center" />
+                        <Label
+                            x:Name="lblRating"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            TextColor="#FF8800"
+                            VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
             </Grid>
 
-            <Label
-                x:Name="lblDistancia"
-                FontSize="14"
-                TextColor="Gray" />
+            <!--  DISTÂNCIA  -->
+            <HorizontalStackLayout Margin="0,-6,0,0" Spacing="6">
+                <Label
+                    FontSize="12"
+                    Text="📍"
+                    VerticalOptions="Center" />
+                <Label
+                    x:Name="lblDistancia"
+                    FontSize="13"
+                    TextColor="#666666"
+                    VerticalOptions="Center" />
+            </HorizontalStackLayout>
 
-            <!--  CAMPOS ESPECÍFICOS DE RESTAURANTE  -->
-            <Grid
+            <!--  3. BLOCO DE INFORMAÇÕES TÉCNICAS (RESTAURANTE)  -->
+            <Border
                 x:Name="gridRestaurante"
-                ColumnDefinitions="*, *"
+                Padding="14"
+                BackgroundColor="White"
                 IsVisible="False"
-                RowDefinitions="Auto, Auto"
-                RowSpacing="10">
+                Stroke="#E0E0E0"
+                StrokeShape="RoundRectangle 10">
+                <Grid
+                    ColumnDefinitions="*, *"
+                    ColumnSpacing="10"
+                    RowDefinitions="Auto, Auto"
+                    RowSpacing="10">
 
-                <Label
-                    x:Name="lblCustoMedio"
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    FontSize="13"
-                    TextColor="Black" />
-                <Label
-                    x:Name="lblHorarioRestaurante"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    FontSize="13"
-                    TextColor="Black" />
-                <Label
-                    x:Name="lblEstacionamento"
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    FontSize="13"
-                    TextColor="Black" />
-            </Grid>
+                    <VerticalStackLayout
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Spacing="2">
+                        <Label
+                            FontSize="11"
+                            Text="Faixa de Preço"
+                            TextColor="#888888" />
+                        <Label
+                            x:Name="lblCustoMedio"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            TextColor="#222222" />
+                    </VerticalStackLayout>
 
-            <!--  CAMPOS ESPECÍFICOS DE ATRAÇÃO (SCENIC SPOT)  -->
-            <Grid
+                    <VerticalStackLayout
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Spacing="2">
+                        <Label
+                            FontSize="11"
+                            Text="Funcionamento"
+                            TextColor="#888888" />
+                        <Label
+                            x:Name="lblHorarioRestaurante"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            TextColor="#222222" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Spacing="2">
+                        <Label
+                            FontSize="11"
+                            Text="Estacionamento"
+                            TextColor="#888888" />
+                        <Label
+                            x:Name="lblEstacionamento"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            TextColor="#222222" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!--  4. BLOCO DE INFORMAÇÕES TÉCNICAS (ATRAÇÃO / SCENIC SPOT)  -->
+            <Border
                 x:Name="gridAtracao"
-                ColumnDefinitions="*, *"
+                Padding="14"
+                BackgroundColor="White"
                 IsVisible="False"
-                RowDefinitions="Auto, Auto"
-                RowSpacing="10">
+                Stroke="#E0E0E0"
+                StrokeShape="RoundRectangle 10">
+                <Grid
+                    ColumnDefinitions="*, *"
+                    ColumnSpacing="10"
+                    RowDefinitions="Auto, Auto"
+                    RowSpacing="10">
 
-                <Label
-                    x:Name="lblHorarioAtracao"
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    FontSize="13"
-                    TextColor="Black" />
-                <Label
-                    x:Name="lblPrecoIngresso"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    FontSize="13"
-                    TextColor="Black" />
-                <Label
-                    x:Name="lblMelhorEpoca"
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    FontSize="13"
-                    TextColor="Black" />
-            </Grid>
+                    <VerticalStackLayout
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Spacing="2">
+                        <Label
+                            FontSize="11"
+                            Text="Horário de Abertura"
+                            TextColor="#888888" />
+                        <Label
+                            x:Name="lblHorarioAtracao"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            TextColor="#222222" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Spacing="2">
+                        <Label
+                            FontSize="11"
+                            Text="Ingresso"
+                            TextColor="#888888" />
+                        <Label
+                            x:Name="lblPrecoIngresso"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            TextColor="#222222" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Spacing="2">
+                        <Label
+                            FontSize="11"
+                            Text="Melhor Época para Visita"
+                            TextColor="#888888" />
+                        <Label
+                            x:Name="lblMelhorEpoca"
+                            FontAttributes="Bold"
+                            FontSize="13"
+                            TextColor="#222222" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <BoxView
-                Margin="0,10"
+                Margin="0,4"
                 HeightRequest="1"
-                Color="#E0E0E0" />
+                Color="#E5E7EB" />
 
-            <!--  BLOCO DE USUÁRIO NÃO LOGADO  -->
-            <VerticalStackLayout
+            <!--  5. BLOCO DE USUÁRIO NÃO LOGADO  -->
+            <Border
                 x:Name="layoutDeslogado"
-                Margin="0,20"
-                HorizontalOptions="Center"
+                Margin="0,8"
+                Padding="20"
+                BackgroundColor="White"
                 IsVisible="True"
-                Spacing="15">
+                Stroke="#E0E0E0"
+                StrokeShape="RoundRectangle 12">
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="12">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="15"
+                        HorizontalOptions="Center"
+                        Text="🔒 Faça login para ver as avaliações"
+                        TextColor="#333333" />
 
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="16"
-                    HorizontalOptions="Center"
-                    Text="Faça login para ver as avaliações"
-                    TextColor="Black" />
+                    <Label
+                        FontSize="12"
+                        HorizontalTextAlignment="Center"
+                        Text="Acesse sua conta para conferir a opinião da comunidade sobre este local."
+                        TextColor="#666666" />
 
-                <Button
-                    BackgroundColor="#1E88E5"
-                    Clicked="OnEntrarClicked"
-                    CornerRadius="8"
-                    FontAttributes="Bold"
-                    Text="ENTRAR"
-                    TextColor="White"
-                    WidthRequest="150" />
-            </VerticalStackLayout>
+                    <Button
+                        Margin="0,4,0,0"
+                        BackgroundColor="#0066CC"
+                        Clicked="OnEntrarClicked"
+                        CornerRadius="8"
+                        FontAttributes="Bold"
+                        HeightRequest="42"
+                        Text="ENTRAR AGORA"
+                        TextColor="White"
+                        WidthRequest="180" />
+                </VerticalStackLayout>
+            </Border>
 
-            <!--  BLOCO DE AVALIAÇÕES (EXIBIDO APENAS QUANDO LOGADO)  -->
+            <!--  6. BLOCO DE AVALIAÇÕES (EXIBIDO APENAS QUANDO LOGADO)  -->
             <VerticalStackLayout
                 x:Name="layoutLogado"
                 IsVisible="False"
-                Spacing="10">
+                Spacing="12">
 
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="16"
-                    Text="Avaliações de Usuários"
-                    TextColor="Black" />
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="17"
+                        Text="Avaliação em Destaque"
+                        TextColor="#1A1A1A"
+                        VerticalOptions="Center" />
 
-                <CollectionView x:Name="cvAvaliacoes" HeightRequest="180">
+                    <Button
+                        Grid.Column="1"
+                        Padding="0"
+                        BackgroundColor="Transparent"
+                        Clicked="OnVerMaisClicked"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        Text="Ver Todas &gt;"
+                        TextColor="#0066CC" />
+                </Grid>
+
+                <!--  CONTAINER DO CARD PREVIEW  -->
+                <CollectionView x:Name="cvAvaliacoes" SelectionMode="None">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="views:ReviewDto">
                             <Border
-                                Margin="0,5"
-                                Padding="10"
-                                BackgroundColor="#F5F5F5"
-                                StrokeShape="RoundRectangle 8"
-                                StrokeThickness="0">
-                                <Grid
-                                    ColumnDefinitions="Auto, *"
-                                    ColumnSpacing="10"
-                                    RowDefinitions="Auto, Auto">
-                                    <Image
+                                Padding="14"
+                                BackgroundColor="White"
+                                Stroke="#E0E0E0"
+                                StrokeShape="RoundRectangle 12">
+                                <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="10">
+
+                                    <!--  Linha 1: Avatar, Nome, Data e Nota  -->
+                                    <Grid
                                         Grid.Row="0"
-                                        Grid.Column="0"
-                                        Aspect="AspectFill"
-                                        HeightRequest="40"
-                                        Source="{Binding AvatarUrl}"
-                                        WidthRequest="40" />
-                                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                                        ColumnDefinitions="44, *, Auto"
+                                        ColumnSpacing="10"
+                                        VerticalOptions="Center">
+                                        <Border
+                                            Grid.Column="0"
+                                            HeightRequest="44"
+                                            Stroke="Transparent"
+                                            StrokeShape="RoundRectangle 22"
+                                            WidthRequest="44">
+                                            <Image Aspect="AspectFill" Source="{Binding AvatarUrl}" />
+                                        </Border>
+
+                                        <VerticalStackLayout
+                                            Grid.Column="1"
+                                            Spacing="2"
+                                            VerticalOptions="Center">
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="14"
+                                                Text="{Binding UserName}"
+                                                TextColor="#222222" />
+                                            <Label
+                                                FontSize="11"
+                                                Text="{Binding ReviewTime}"
+                                                TextColor="#777777" />
+                                        </VerticalStackLayout>
+
+                                        <Border
+                                            Grid.Column="2"
+                                            Padding="6,2"
+                                            BackgroundColor="#FFF8E7"
+                                            Stroke="#FFC107"
+                                            StrokeShape="RoundRectangle 6"
+                                            VerticalOptions="Center">
+                                            <HorizontalStackLayout Spacing="3" VerticalOptions="Center">
+                                                <Label
+                                                    FontSize="12"
+                                                    Text="★"
+                                                    TextColor="#FF8800"
+                                                    VerticalOptions="Center" />
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    FontSize="12"
+                                                    Text="{Binding Rating}"
+                                                    TextColor="#FF8800"
+                                                    VerticalOptions="Center" />
+                                            </HorizontalStackLayout>
+                                        </Border>
+                                    </Grid>
+
+                                    <!--  Linha 2: Conteúdo  -->
+                                    <Label
+                                        Grid.Row="1"
+                                        FontSize="13"
+                                        LineBreakMode="WordWrap"
+                                        Text="{Binding ReviewContent}"
+                                        TextColor="#444444" />
+
+                                    <!--  Linha 3: Galeria Horizontal de Fotos (Com x:DataType="x:String")  -->
+                                    <CollectionView
+                                        Grid.Row="2"
+                                        HeightRequest="64"
+                                        ItemsSource="{Binding ImageUrls}">
+                                        <CollectionView.ItemsLayout>
+                                            <LinearItemsLayout ItemSpacing="8" Orientation="Horizontal" />
+                                        </CollectionView.ItemsLayout>
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="x:String">
+                                                <Border
+                                                    HeightRequest="64"
+                                                    Stroke="#E0E0E0"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    WidthRequest="64">
+                                                    <Image Aspect="AspectFill" Source="{Binding .}" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+
+                                    <!--  Linha 4: Curtidas  -->
+                                    <HorizontalStackLayout
+                                        Grid.Row="3"
+                                        Spacing="6"
+                                        VerticalOptions="Center">
                                         <Label
-                                            FontAttributes="Bold"
-                                            Text="{Binding UserName}"
-                                            TextColor="Black" />
+                                            FontSize="12"
+                                            Text="👍"
+                                            VerticalOptions="Center" />
                                         <Label
-                                            FontSize="13"
-                                            Text="{Binding ReviewContent}"
-                                            TextColor="DarkGray" />
-                                    </VerticalStackLayout>
+                                            FontSize="12"
+                                            Text="{Binding LikeCount, StringFormat='{0} pessoas acharam útil'}"
+                                            TextColor="#777777"
+                                            VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <Button
-                    BackgroundColor="Transparent"
-                    BorderColor="#1E88E5"
-                    BorderWidth="1"
-                    Clicked="OnVerMaisClicked"
-                    CornerRadius="8"
-                    Text="VER MAIS"
-                    TextColor="#1E88E5" />
             </VerticalStackLayout>
 
         </VerticalStackLayout>

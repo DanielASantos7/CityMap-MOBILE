@@ -1,6 +1,5 @@
 using Mobile.DTOs;
 using Mobile.Service;
-using System.Text.Json.Serialization;
 
 namespace Mobile.Views;
 
@@ -9,7 +8,6 @@ public partial class DetailsView : ContentPage
     private readonly int _id;
     private readonly string _businessType;
 
-    // Gerenciador simples de sessão estática para a prova
     public static bool UsuarioEstaLogado { get; set; } = false;
 
     public DetailsView(int id, string businessType)
@@ -23,31 +21,81 @@ public partial class DetailsView : ContentPage
     {
         base.OnAppearing();
 
-        // Atualiza a visibilidade do bloco de login/avaliações baseado no estado do usuário
         layoutDeslogado.IsVisible = !UsuarioEstaLogado;
         layoutLogado.IsVisible = UsuarioEstaLogado;
 
         await CarregarDetalhesAsync();
+
+        if (UsuarioEstaLogado)
+            await CarregarAvaliacaosAsync();
+    }
+
+    private async Task CarregarAvaliacaosAsync()
+    {
+        try
+        {
+            string tipo = _businessType?.ToLower() == "restaurant" || _businessType?.ToLower() == "restaurante"
+                ? "restaurant"
+                : "scenic";
+
+            string endpoint = $"system/api/Review/list?pageNum=1&pageSize=1&businessType={tipo}&businessId={_id}";
+
+            System.Diagnostics.Debug.WriteLine($"[DIAGNOSTICO] Chamando endpoint: {endpoint}");
+
+            var resPage = await ApiService.GetAsync<ResponseApi<PageData<ReviewDto>>>(endpoint);
+            List<ReviewDto>? lista = resPage?.Data?.Rows?.ToList();
+
+            if (lista != null && lista.Count > 0)
+            {
+                var itemPreview = lista.FirstOrDefault();
+                if (itemPreview != null)
+                {
+                    cvAvaliacoes.ItemsSource = new List<ReviewDto> { itemPreview };
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Falha ao carregar preview de avaliações: {ex.Message}");
+        }
     }
 
     private async Task CarregarDetalhesAsync()
     {
         try
         {
-            if (_businessType == "restaurant")
+            string tipo = _businessType?.ToLower() ?? "";
+
+            if (tipo == "restaurant" || tipo == "restaurante")
             {
-                var res = await ApiService.GetAsync<ResponseApi<RestaurantDetailDto>>($"/system/api/restaurant/{_id}");
-                if (res?.Data != null) PreencherRestaurante(res.Data);
+                var res = await ApiService.GetAsync<ResponseApi<RestaurantDetailDto>>($"system/api/restaurant/{_id}");
+
+                if (res?.Data != null)
+                {
+                    PreencherRestaurante(res.Data);
+                }
+                else
+                {
+                    await DisplayAlert("Erro", $"{ApiService.Erro}", "OK");
+                }
             }
             else
             {
-                var res = await ApiService.GetAsync<ResponseApi<ScenicSpotDetailDto>>($"/system/api/scenicSpot/{_id}");
-                if (res?.Data != null) PreencherAtracao(res.Data);
+                var res = await ApiService.GetAsync<ResponseApi<ScenicSpotDetailDto>>($"system/api/scenicSpot/{_id}");
+
+                if (res?.Data != null)
+                {
+                    PreencherAtracao(res.Data);
+                }
+                else
+                {
+                    await DisplayAlert("Erro", $"{ApiService.Erro}", "OK");
+                }
             }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Erro", $"Falha ao carregar detalhes: {ex.Message}", "OK");
+            await DisplayAlert("Erro Crítico", $"Falha ao carregar detalhes: {ex.Message}", "OK");
         }
     }
 
@@ -61,7 +109,7 @@ public partial class DetailsView : ContentPage
 
         lblCustoMedio.Text = $"$ Custo Médio {item.PriceRange}";
         lblHorarioRestaurante.Text = $"Horário: {item.BusinessHours}";
-        lblEstacionamento.Text = $"Estacionamento: {item.RemainingParkingSpaces ?? "0"} disponíveis";
+        lblEstacionamento.Text = $"Estacionamento: {item.RemainingParkingSpaces?.ToString() ?? "0"} disponíveis";
 
         gridRestaurante.IsVisible = true;
         gridAtracao.IsVisible = false;
@@ -85,41 +133,11 @@ public partial class DetailsView : ContentPage
 
     private async void OnEntrarClicked(object sender, EventArgs e)
     {
-        // Navega para a tela de Login (vamos criá-la na sequência)
-        //await Navigation.PushAsync(new LoginView());
+        await Navigation.PushAsync(new LoginView());
     }
 
     private async void OnVerMaisClicked(object sender, EventArgs e)
     {
-        // TODO: Navegar para a lista completa de avaliações (Sessão 2.2)
-        await DisplayAlert("Avaliações", "Navegar para Todos os Comentários", "OK");
+        await Navigation.PushAsync(new ReviewView(_id, _businessType));
     }
-}
-
-// ====================================================================
-// DTOs ESPECÍFICOS DE DETALHES
-// ====================================================================
-
-public class RestaurantDetailDto
-{
-    [JsonPropertyName("restaurantId")] public int RestaurantId { get; set; }
-    [JsonPropertyName("restaurantName")] public string RestaurantName { get; set; } = string.Empty;
-    [JsonPropertyName("priceRange")] public string PriceRange { get; set; } = string.Empty;
-    [JsonPropertyName("businessHours")] public string BusinessHours { get; set; } = string.Empty;
-    [JsonPropertyName("remainingParkingSpaces")] public string? RemainingParkingSpaces { get; set; }
-    [JsonPropertyName("rating")] public string? Rating { get; set; }
-    [JsonPropertyName("distance")] public string? Distance { get; set; }
-    [JsonPropertyName("imageUrl")] public string? ImageUrl { get; set; }
-}
-
-public class ScenicSpotDetailDto
-{
-    [JsonPropertyName("spotId")] public int SpotId { get; set; }
-    [JsonPropertyName("spotName")] public string SpotName { get; set; } = string.Empty;
-    [JsonPropertyName("openingHours")] public string OpeningHours { get; set; } = string.Empty;
-    [JsonPropertyName("ticketPrice")] public string TicketPrice { get; set; } = string.Empty;
-    [JsonPropertyName("touristPeriod")] public string TouristPeriod { get; set; } = string.Empty;
-    [JsonPropertyName("rating")] public string? Rating { get; set; }
-    [JsonPropertyName("distance")] public string? Distance { get; set; }
-    [JsonPropertyName("imageUrl")] public string? ImageUrl { get; set; }
 }
