@@ -34,6 +34,10 @@ namespace Mobile.Service
             }
         }
 
+        // Propriedades estáticas de sessão do usuário logado
+        public static string UserName { get; set; } = "Admin";
+        public static string UserEmail { get; set; } = "admin@example.com";
+        public static string UserAvatar { get; set; } = "dotnet_bot.png";
 
         public static async Task<T?> GetAsync<T>(string endpoint)
         {
@@ -88,6 +92,31 @@ namespace Mobile.Service
             catch (Exception ex)
             {
                 Erro = $"Falha de conexão {ex.Message}";
+                return default;
+            }
+        }
+
+        public static async Task<TRes?> DeleteAsync<TRes>(string endpoint)
+        {
+            Erro = string.Empty;
+
+            try
+            {
+                var response = await Http.DeleteAsync(endpoint);
+                if (response.IsSuccessStatusCode)
+                    return await response.Content.ReadFromJsonAsync<TRes>(_jsonOptions);
+
+                Erro = response.StatusCode switch
+                {
+                    HttpStatusCode.Unauthorized => "Credenciais inválidas",
+                    HttpStatusCode.NotFound => "Item não encontrado no banco",
+                    _ => $"Erro no servidor. Código {(int)response.StatusCode}"
+                };
+                return default;
+            }
+            catch (Exception ex)
+            {
+                Erro = $"Falha de conexão: {ex.Message}";
                 return default;
             }
         }

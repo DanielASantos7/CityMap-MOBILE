@@ -10,7 +10,7 @@
     <TabBar CurrentItem="{x:Reference tabServicos}">
 
         <Tab Title="Navegação no Mapa">
-            <ShellContent ContentTemplate="{DataTemplate views:ListRestaurantsView}" />
+            <ShellContent ContentTemplate="{DataTemplate views:MapView}" />
         </Tab>
 
         <!--  O x:Name permite que a TabBar inicie diretamente nesta aba  -->
@@ -19,7 +19,7 @@
         </Tab>
 
         <Tab Title="Perfil">
-            <ShellContent ContentTemplate="{DataTemplate views:ListRestaurantsView}" />
+            <ShellContent ContentTemplate="{DataTemplate views:ProfileView}" />
         </Tab>
 
     </TabBar>

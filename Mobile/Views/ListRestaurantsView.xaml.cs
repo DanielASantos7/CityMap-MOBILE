@@ -17,7 +17,7 @@ public partial class ListRestaurantsView : ContentPage
 
         if (pkFiltro.SelectedIndex == -1)
         {
-            pkFiltro.SelectedIndex = 0;
+            pkFiltro.SelectedIndex = 0; // Seleciona "Todos" por padrão
         }
         else
         {
@@ -66,7 +66,7 @@ public partial class ListRestaurantsView : ContentPage
 
     private async Task<List<ServicoProximoDto>> BuscarAtracoesAsync()
     {
-        var res = await ApiService.GetAsync<ResponseApi<PageData<ScenicSpotApiDto>>>("/system/api/scenicSpot/list");
+        var res = await ApiService.GetAsync<ResponseApi<PageData<ScenicSpotApiDto>>>("system/api/scenicSpot/list");
         if (res?.Data?.Rows == null) return new List<ServicoProximoDto>();
 
         return res.Data.Rows.Select(s => new ServicoProximoDto

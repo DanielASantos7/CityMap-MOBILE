@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mobile.Views.MapView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Map Navigation"
+    BackgroundColor="#F0F2F5">
+
+    <!--  O grid permite empilhar elementos no eixo Z (camadas)  -->
+    <Grid>
+        <!--  ScrollView com suporte a rolagem nos eixos X e Y  -->
+        <ScrollView
+            HorizontalScrollBarVisibility="Never"
+            Orientation="Both"
+            VerticalScrollBarVisibility="Never">
+
+            <!--  Container interno de tamanho fixo que recebe o Zoom  -->
+            <Grid
+                x:Name="mapContainer"
+                HeightRequest="1000"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="800">
+
+                <!--  Camada 1 (fundo)  -->
+                <Image
+                    Aspect="AspectFill"
+                    HorizontalOptions="Fill"
+                    Source="mapaoffline.png"
+                    VerticalOptions="Fill" />
+
+                <!--  Camada 2 (sobreposição): Desenho Vetorial de Rotas  -->
+                <GraphicsView
+                    x:Name="gvRotas"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill" />
+            </Grid>
+        </ScrollView>
+
+        <!--  controles Flutuantes fixados na camada superior  -->
+        <VerticalStackLayout
+            Margin="0,0,16,0"
+            HorizontalOptions="End"
+            Spacing="12"
+            VerticalOptions="Center">
+
+            <Button
+                BackgroundColor="#0066CC"
+                Clicked="OnZoomInClicked"
+                CornerRadius="40"
+                FontAttributes="Bold"
+                FontSize="30"
+                HeightRequest="60"
+                Shadow="{Shadow Brush=Black,
+                                Offset='0,4',
+                                Radius=8,
+                                Opacity=0.3}"
+                Text="+"
+                TextColor="White"
+                WidthRequest="60" />
+            <Button
+                BackgroundColor="#0066CC"
+                Clicked="OnZoomOutClicked"
+                CornerRadius="40"
+                FontAttributes="Bold"
+                FontSize="30"
+                HeightRequest="60"
+                Shadow="{Shadow Brush=Black,
+                                Offset='0,4',
+                                Radius=8,
+                                Opacity=0.3}"
+                Text="-"
+                TextColor="White"
+                WidthRequest="60" />
+
+        </VerticalStackLayout>
+
+    </Grid>
+
+</ContentPage>
